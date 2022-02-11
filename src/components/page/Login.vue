@@ -9,12 +9,7 @@
                     </el-input>
                 </el-form-item>
                 <el-form-item prop="password">
-                    <el-input
-                        type="password"
-                        placeholder="password"
-                        v-model="param.password"
-                        @keyup.enter.native="submitForm()"
-                    >
+                    <el-input type="password" placeholder="password" v-model="param.password" @keyup.enter.native="submitForm()">
                         <el-button slot="prepend" icon="el-icon-lx-lock"></el-button>
                     </el-input>
                 </el-form-item>
@@ -28,34 +23,47 @@
 </template>
 
 <script>
+import axios from 'axios';
+import {login} from '../../api/index';
 export default {
-    data: function() {
+    data: function () {
         return {
             param: {
-                username: 'admin',
-                password: '123123',
+                username: '668',
+                password: '123456'
             },
             rules: {
                 username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-                password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
-            },
+                password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
+            }
         };
     },
     methods: {
         submitForm() {
-            this.$refs.login.validate(valid => {
+            this.$refs.login.validate((valid) => {
                 if (valid) {
-                    this.$message.success('登录成功');
-                    localStorage.setItem('ms_username', this.param.username);
-                    this.$router.push('/');
+                    login({
+                        userName: this.param.username,
+                        userPassword: this.param.password
+                    }).then(res=>{
+                        console.log(res)
+                        if(res.code===0){
+                            this.$message.success('登录成功');
+                            localStorage.setItem('ms_username', this.param.username);
+                            this.$router.push('/');
+                        }else{
+                            this.$message.error('登录失败')
+                            console.log('登录失败')
+                        }
+                    });
                 } else {
                     this.$message.error('请输入账号和密码');
                     console.log('error submit!!');
                     return false;
                 }
             });
-        },
-    },
+        }
+    }
 };
 </script>
 
